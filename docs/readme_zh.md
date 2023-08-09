@@ -42,11 +42,18 @@ CodeAssault 是一个强大的PHP代码审计工具，可以自动扫描常见�
 python3 bin/cli.py yourfile.php
 ```
 
+<img width="802" alt="image" src="https://github.com/WitchWatcher/CodeAssault/assets/119853210/2812f776-9273-4c81-9be5-eaa5c3ec150c">
+
+
 ### 文件夹扫描
 
 ```
 python3 bin/cli.py -f yourdirectory
 ```
+
+<img width="844" alt="image" src="https://github.com/WitchWatcher/CodeAssault/assets/119853210/89cb38fa-a14e-4ac7-a33c-c5bb46db416e">
+
+
 
 ### 显示帮助
 
@@ -84,5 +91,5 @@ python3 bin/cli.py -v
 
 ## 联系作者
 
-如有任何问题或建议，请通过[issues](https://github.com/WitchWatcher/CodeAssault/issues)与我们联系。
+如有任何问题或建议，请通过[issues]([https://github.com/WitchWatcher/CodeAssault/issues](https://github.com/WitchWatcher/CodeAssault/issues)https://github.com/WitchWatcher/CodeAssault/issues)与我们联系。
 
