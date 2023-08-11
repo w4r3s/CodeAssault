@@ -1,7 +1,31 @@
 import re
 import os
-from rules import sql_injection_rules
-from rules import xss_rules  # 导入新的XSS规则模块
+import importlib
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # 获取scanner.py的绝对路径
+RULES_DIR = os.path.join(BASE_DIR, 'rules')  # 连接scanner.py的路径和'rules'得到rules的绝对路径
+
+def load_all_rules_from_directory(directory_path=RULES_DIR):
+    all_rules = {}
+    # 获取rules目录下的所有.py文件
+    for rule_file in os.listdir(directory_path):
+        if rule_file.endswith('_rules.py'):
+            module_name = rule_file[:-3]  # 移除.py后缀
+            module = importlib.import_module(f"rules.{module_name}")
+            rule_key = module_name.upper()
+            rules_list = getattr(module, rule_key, [])
+            all_rules[rule_key] = rules_list
+    return all_rules
+
+RULES = load_all_rules_from_directory()
+
+def determine_rule_type(rule_key):
+    """
+    Determine the rule type based on the rule_key.
+    This will convert something like "SQL_INJECTION_RULES" to "SQL Injection Warning".
+    """
+    rule_type = rule_key.replace("_RULES", "").title().replace("_", " ") + " Warning"
+    return rule_type
 
 def scan_file(file_path):
     # 确保文件存在并且是PHP文件
@@ -13,22 +37,14 @@ def scan_file(file_path):
     with open(file_path, 'r') as file:
         # 按行读取文件内容
         for line_number, line in enumerate(file.readlines(), start=1):
-            # 针对每个SQL注入规则进行检查
-            for rule in sql_injection_rules.SQL_INJECTION_RULES:
-                pattern = rule['pattern']
-                reason = rule['reason']
-                # 使用正则表达式检查该行是否匹配规则
-                if re.search(pattern, line):
-                    results.append((file_path, str(line_number), "SQL Injection Warning", reason))
-
-            # 针对每个XSS规则进行检查
-            for rule in xss_rules.XSS_INJECTION_RULES:  # 使用新的XSS规则模块
-                pattern = rule['pattern']
-                reason = rule['reason']
-                # 使用正则表达式检查该行是否匹配规则
-                if re.search(pattern, line):
-                    results.append((file_path, str(line_number), "XSS Warning", reason))  # 输出XSS警告
-
+            for rule_key, rules in RULES.items():
+                rule_type = determine_rule_type(rule_key)
+                for rule in rules:
+                    pattern = rule['pattern']
+                    reason = rule['reason']
+                    # 使用正则表达式检查该行是否匹配规则
+                    if re.search(pattern, line):
+                        results.append((file_path, str(line_number), rule_type, reason))
     return results
 
 def scan_directory(directory_path):
@@ -41,4 +57,3 @@ def scan_directory(directory_path):
                 if file_results:
                     results.extend(file_results)
     return results
-

@@ -29,7 +29,6 @@ def scan_directory(directory_path):
                     results.extend(file_results)
     return results
 
-
 def main():
     parser = argparse.ArgumentParser(add_help=False, description='PHP Code Auditing Tool')
     parser.add_argument('file', type=str, nargs='?', help='PHP file to scan')
@@ -54,16 +53,11 @@ def main():
             table = Table("Filename", "Line Number", "Warning", "Reason", show_lines=True) 
             for item in result:
                 filename, line_number, warning, reason = item
-                warning_text = Text(warning)
-                if "SQL Injection Warning" in warning:
-                    warning_text.stylize("red", 0, len(warning))
-                elif "XSS Warning" in warning:
-                    warning_text.stylize("yellow", 0, len(warning))
+                warning_text = Text(warning, style="red")  # Apply red color to all warnings
                 table.add_row(filename, line_number, warning_text, reason)
             console.print(table)
         return
     
-
     if args.folder:
         directory_path = args.folder
         if not os.path.exists(directory_path):
@@ -75,17 +69,12 @@ def main():
             table = Table("Filename", "Line Number", "Warning", "Reason", show_lines=True)
             for item in results:
                 filename, line_number, warning, reason = item
-                warning_text = Text(warning)
-                if "SQL Injection Warning" in warning:
-                    warning_text.stylize("red", 0, len(warning))
-                elif "XSS Warning" in warning:
-                    warning_text.stylize("yellow", 0, len(warning))
+                warning_text = Text(warning, style="red")  # Apply red color to all warnings
                 table.add_row(filename, line_number, warning_text, reason)
             console.print(table)
         else:
             print("No warnings found.")
         return
-
 
 if __name__ == "__main__":
     main()
